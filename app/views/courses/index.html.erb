@@ -1,0 +1,71 @@
+<% if user_signed_in? %>
+
+  <h1>Cursos</h1>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th></th>
+        <th colspan="2"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @courses.each do |course| %>
+        <tr>
+          <td><%= course.name %></td>
+          <td><%= course.description %></td>
+          <!--td><%# link_to 'Show', course %></td-->
+          <% if current_user.courses.pluck(:id).include? course.id%>
+            <td><div style="color: red"><strong>Estás Inscrito a este curso</strong></div>
+            <td><%= link_to 'Cancelar inscripción', inscriptions_path(user_id: current_user.id, course_id: course.id), method: :delete %></td>
+          <% elsif course.owner_id == current_user.id%>
+            <td><div style="color: blue"><strong>Eres el dueño de este curso</strong></div></td>
+          <td><%= link_to 'Edit', edit_course_path(course) %></td>
+          <% else %>
+            <td><%= link_to 'Inscríbete', inscriptions_path(user_id: current_user.id, course_id: course.id), method: :post %></td>
+            <td></td>
+              <% end %>
+          <!--td><%# link_to 'Destroy', course, method: :delete, data: { confirm: 'Are you sure?' } %></td-->
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  
+  <br>
+
+
+  <%= link_to 'New Course', new_course_path %>
+  <%= link_to "Cerrar sesión", destroy_user_session_path, :method => :delete %>
+
+<% else %>
+  
+  <h1>Cursos disponibles</h1>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @courses.each do |course| %>
+        <tr>
+          <td><%= course.name %></td>
+          <td><%= course.description %></td>
+          <td><%= link_to 'Inscripción', new_user_session_path %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  
+  <br>
+
+  <p>Para ver tus cursos, <%= link_to "inicia sesión", new_user_session_path  %></p>
+  
+<% end %>
+
